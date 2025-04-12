@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     { action: 'GET_INITIAL_STATE' },
                     (INITIAL_STATE) => {
                         if (chrome.runtime.lastError || !INITIAL_STATE) {
-                            console.error('通信失败:', chrome.runtime.lastError);
+                            // console.error('通信失败:', chrome.runtime.lastError);
                             retryCount++;
 
                             if (retryCount * 500 <= maxRetryTime) {
