@@ -1,0 +1,40 @@
+{
+    "manifest_version": 3,
+    "name": "Bilibili Subtitle Downloader",
+    "version": "1.0",
+    "permissions": [
+        "storage",
+        "activeTab",
+        "scripting",
+        "downloads"
+    ],
+    "host_permissions": [
+        "*://*.bilibili.com/*"
+    ],
+    "action": {
+        "default_popup": "popup.html"
+    },
+    "web_accessible_resources": [
+        {
+            "resources": [
+                "inject.js"
+            ],
+            "matches": [
+                "*://*.bilibili.com/*"
+            ]
+        }
+    ],
+    "content_scripts": [
+        {
+            "matches": [
+                "*://*.bilibili.com/*"
+            ],
+            "js": [
+                "content.js"
+            ]
+        }
+    ],
+    "icons": {
+        "128": "icon.png"
+    }
+}

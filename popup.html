@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bilibili Subtitle Downloader</title>
+    <style>
+        body {
+            width: 300px;
+            margin: 15px;
+        }
+        
+        .subtitle-item {
+            margin-bottom: 10px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .download-btn {
+            margin-top: 5px;
+            padding: 5px 10px;
+            background-color: #00a1d6;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .download-btn:hover {
+            background-color: #0081b8;
+        }
+
+        .subtitle-link-item {
+            margin-bottom: 10px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .subtitle-link {
+            margin-top: 5px;
+            padding: 5px 10px;
+            background-color: #00a1d6;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+
+        .subtitle-link:hover {
+            background-color: #0081b8;
+        }
+    </style>
+</head>
+
+<body>
+    <main class="main">
+        <h3 id="subtitle-h3"></h3>
+        <div id="subtitle-list">
+            <p>🔄 字幕加载中...</p>
+        </div>
+        <h3 id="subtitle-link-h3"></h3>
+        <div id="subtitle-link-list">
+        </div>
+    </main>
+    <script type="module" src="popup.js"></script>
+</body>
+
+</html>
