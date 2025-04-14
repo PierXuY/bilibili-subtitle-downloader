@@ -46,7 +46,7 @@ export async function downloadSubtitle(file_url, file_name, file_type) {
     chrome.downloads.download({
         url: objectUrl,
         filename: file_name,
-        saveAs: false
+        saveAs: true
     }, () => {
         if (chrome.runtime.lastError) {
             console.error('downloadSubtitle failed', chrome.runtime.lastError.message);
