@@ -1,13 +1,11 @@
 import { downloadSubtitle } from './download.js';
-import { extraTitle } from './utils.js';
+import { extraTitle, cleanFileName } from './utils.js';
 
 let title;
 document.addEventListener('DOMContentLoaded', () => {
 
     const subtitleH3 = document.getElementById('subtitle-h3');
-    const subtitleLinkH3 = document.getElementById('subtitle-link-h3');
     const subtitleList = document.getElementById('subtitle-list');
-    const subtitleLinkList = document.getElementById('subtitle-link-list');
 
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         const tabId = tabs[0].id;
@@ -105,26 +103,13 @@ document.addEventListener('DOMContentLoaded', () => {
         // 添加下载按钮事件
         document.querySelectorAll('.download-btn').forEach(btn => {
             btn.addEventListener('click', () => {
-                const url = btn.getAttribute('data-url');
+                const file_url = btn.getAttribute('data-url');
                 const lang_doc = btn.getAttribute('data-lang_doc');
-                const content_type = btn.getAttribute('data-content_type');
-                downloadSubtitle(url, title, lang_doc, content_type);
+                const file_type = btn.getAttribute('data-content_type');
+                const file_name = `${lang_doc}_${cleanFileName(title)}.${file_type}`
+                downloadSubtitle(file_url, file_name, file_type);
             });
 
         });
-
-        subtitleLinkH3.innerHTML = `字幕链接地址`;
-        // 链接地址
-        subtitles.forEach(subtitle => {
-            const item = document.createElement('div');
-            item.className = 'subtitle-link-item';
-            const url = subtitle.subtitle_url;
-            const fullUrl = url.startsWith('http') ? url : `https:${url}`;
-            item.innerHTML = `
-            <a  class="subtitle-link" href="${fullUrl}" target="_blank"> ${subtitle.lan_doc}</a>
-            `;
-            subtitleLinkList.appendChild(item);
-        }
-        )
     }
 })

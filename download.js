@@ -1,47 +1,57 @@
-// 下载字幕
-import { extractJsonContentToText, cleanFileName } from './utils.js';
+import { extractJsonContentToText } from './utils.js';
 
-export function downloadSubtitle(url, title, lang_doc, content_type) {
-    let downloadContent;
-    let file_type = {
-        "json": "application/json",
-        "txt": "text/plain"
+const CONTENT_TYPE_MAP = Object.freeze({
+    json: 'application/json',
+    txt: 'text/plain'
+});
+const VALID_CONTENT_TYPES = new Set(Object.keys(CONTENT_TYPE_MAP));
+
+async function createObjectUrl(url, file_type) {
+    if (!VALID_CONTENT_TYPES.has(file_type)) {
+        throw new Error(`Invalid content type: ${file_type}`);
     }
 
-    const fullUrl = url.startsWith('http') ? url : `https:${url}`;
-    // 使用 fetch 获取文件内容
-    fetch(fullUrl)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return response.json(); // 解析 JSON
-        })
-        .then(originalJson => {
-            if (content_type === 'json') {
-                // 格式化 JSON
-                downloadContent = JSON.stringify(originalJson, null, 4);
-            } else if (content_type === 'txt') {
-                // 提取 content 字段并拼接成纯文本
-                downloadContent = extractJsonContentToText(originalJson);
-            }
-            // 创建一个新的文件对象
-            const blob = new Blob([downloadContent], { type: file_type[content_type] });
-            const objectUrl = URL.createObjectURL(blob);
-            // 使用 chrome.downloads.download 下载格式化后的文件
-            chrome.downloads.download({
-                url: objectUrl,
-                filename: `${lang_doc}_${cleanFileName(title)}.${content_type}`,
-                saveAs: false
-            }, () => {
-                if (chrome.runtime.lastError) {
-                    console.error('下载失败:', chrome.runtime.lastError.message);
-                }
-                // 释放对象 URL
-                URL.revokeObjectURL(objectUrl);
-            });
-        })
-        .catch(error => {
-            console.error('下载或格式化失败:', error.message);
+    let fullUrl = url.startsWith('http') ? url : `https://${url}`;
+    try {
+        const response = await fetch(fullUrl);
+        if (!response.ok) throw new Error(`Request failed: ${response.status}`);
+
+        const data = await response.json();
+        const processedContent = processContent(data, file_type);
+
+        const blob = new Blob([processedContent], {
+            type: CONTENT_TYPE_MAP[file_type]
         });
+
+        return URL.createObjectURL(blob);
+    } catch (error) {
+        throw new Error(`createObjectUrl failed: ${error.message}`);
+    }
+}
+
+function processContent(data, file_type) {
+    switch (file_type) {
+        case 'json':
+            return JSON.stringify(data, null, 4);
+        case 'txt':
+            return extractJsonContentToText(data);
+        default:
+            throw new Error(`Unsupported type: ${file_type}`);
+    }
+}
+
+export async function downloadSubtitle(file_url, file_name, file_type) {
+    let objectUrl = await createObjectUrl(file_url, file_type)
+
+    chrome.downloads.download({
+        url: objectUrl,
+        filename: file_name,
+        saveAs: false
+    }, () => {
+        if (chrome.runtime.lastError) {
+            console.error('downloadSubtitle failed', chrome.runtime.lastError.message);
+        }
+        // 释放对象 URL
+        URL.revokeObjectURL(objectUrl);
+    });
 }
